@@ -17,7 +17,6 @@ import com.pthlab.vsda.Util.ProcessException;
 @RestController
 public class LocationAPIController {
 
-	// Dependency Injection
 	@Autowired
 	LocationService locationService;
 
@@ -27,20 +26,20 @@ public class LocationAPIController {
 		ProcessException pe = null;
 		String result = null;
 		Error error = isValidLocationRequest(request);
-		if (error != null) {
-			pe = new ProcessException(ProcessException.ErrorType.GENERAL);
+		if (error != null) 
+		{
+			pe = new ProcessException(ProcessException.ErrorType.INVALID_DATA);
 			response.setResponseCode(CommomConstants.API_RESPONSE_ERROR_CODE);
-			return error.getMessage();
+			response.setResponseMessage(error.getMessage());
 			
 		} else {
 			boolean isAvailable = locationService.checkLocation(request);
-			
 			response.setIsInRange(isAvailable);
 			response.setResponseCode(CommomConstants.API_RESPONSE_SUCCESS_CODE);
-			result = APIUTIL.formatJsonResponse(response, pe);
-			return result;
+			
 		}
-
+		result = APIUTIL.formatJsonResponse(response, pe);
+		return result;
 	}
 
 	private Error isValidLocationRequest(LocationRequest request) {
@@ -50,11 +49,18 @@ public class LocationAPIController {
 		}
 
 		else {
-			if (request.getLongitude() == null && request.getLongitude().trim().isEmpty()) {
-				return new Error("Invalid Longitude Value");
+			if( (request.getLongitude() == null || request.getLongitude().trim().isEmpty()) && (request.getLattitude() == null || request.getLattitude().trim().isEmpty())) 
+			{
+				return new Error("All datas are empty");
 			}
-			if (request.getLattitude() == null && request.getLattitude().trim().isEmpty()) {
-				return new Error("Invalid Lattitude Value");
+			else 
+			{
+				if (request.getLongitude() == null || request.getLongitude().trim().isEmpty()) {
+					return new Error("Invalid Longitude Value");
+				}
+				if (request.getLattitude() == null || request.getLattitude().trim().isEmpty()) {
+					return new Error("Invalid Lattitude Value");
+				}
 			}
 		}
 		return null;
