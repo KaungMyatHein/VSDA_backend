@@ -1,7 +1,9 @@
 package com.pthlab.vsda.DAO;
 
+import com.pthlab.vsda.API.requests.LocationRequest;
+
 public interface LocationDAO {
 
-	boolean checkLocation(String longitude, String lattitude);
+	boolean checkLocation(LocationRequest request);
 
 }
